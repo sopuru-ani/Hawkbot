@@ -24,12 +24,15 @@ class ChatbotService:
             return
 
         try:
+            yield _status("classifying", "Understanding your question...")
+
             mode = self._classifier.classify(messages)
             sources: list[Source] = []
             system = GENERAL_SYSTEM
             generation_messages = list(messages)
 
             if mode == "umes":
+                yield _status("retrieving", "Searching UMES sources...")
                 retrieval = self._retriever.retrieve(messages[-1].content)
                 sources = retrieval.sources
                 system = RAG_SYSTEM
@@ -44,6 +47,10 @@ class ChatbotService:
                         ),
                     ),
                 ]
+            else:
+                yield _status("general", "Answering your question...")
+
+            yield _status("generating", "Writing response...")
 
             for token in self._llm.generate_stream(
                 generation_messages, system=system
@@ -66,3 +73,7 @@ class ChatbotService:
 
 def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
+
+
+def _status(stage: str, message: str) -> str:
+    return _sse("status", {"stage": stage, "message": message})

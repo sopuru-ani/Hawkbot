@@ -53,11 +53,22 @@ function App() {
       await streamChat(
         toApiMessages([...messages, userMessage]),
         {
+          onStatus: ({ message }) => {
+            setMessages((current) =>
+              current.map((entry) =>
+                entry.id === assistantId ? { ...entry, status: message } : entry,
+              ),
+            )
+          },
           onToken: (text) => {
             setMessages((current) =>
               current.map((message) =>
                 message.id === assistantId
-                  ? { ...message, content: message.content + text }
+                  ? {
+                      ...message,
+                      content: message.content + text,
+                      status: undefined,
+                    }
                   : message,
               ),
             )
@@ -66,7 +77,13 @@ function App() {
             setMessages((current) =>
               current.map((message) =>
                 message.id === assistantId
-                  ? { ...message, streaming: false, mode, sources }
+                  ? {
+                      ...message,
+                      streaming: false,
+                      status: undefined,
+                      mode,
+                      sources,
+                    }
                   : message,
               ),
             )
@@ -79,6 +96,7 @@ function App() {
                       ...entry,
                       content: entry.content || message,
                       streaming: false,
+                      status: undefined,
                       error: true,
                     }
                   : entry,
@@ -147,12 +165,16 @@ function App() {
                       : 'border border-gray-200 bg-white text-gray-900 shadow-sm'
                 }`}
               >
-                <p className="whitespace-pre-wrap">
-                  {message.content}
-                  {message.streaming && (
-                    <span className="ml-1 inline-block h-4 w-2 animate-pulse bg-gray-400" />
-                  )}
-                </p>
+                {message.streaming && !message.content && message.status ? (
+                  <p className="italic text-gray-500">{message.status}</p>
+                ) : (
+                  <p className="whitespace-pre-wrap">
+                    {message.content}
+                    {message.streaming && message.content && (
+                      <span className="ml-1 inline-block h-4 w-2 animate-pulse bg-gray-400" />
+                    )}
+                  </p>
+                )}
 
                 {message.role === 'assistant' &&
                   !message.streaming &&

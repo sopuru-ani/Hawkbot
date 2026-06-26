@@ -10,11 +10,23 @@ export interface ChatSource {
   url: string
 }
 
+export type ChatStage =
+  | 'classifying'
+  | 'retrieving'
+  | 'generating'
+  | 'general'
+
+export interface StreamStatusPayload {
+  stage: ChatStage
+  message?: string
+}
+
 export interface ChatMessage extends ApiChatMessage {
   id: string
   sources?: ChatSource[]
   mode?: 'umes' | 'general'
   streaming?: boolean
+  status?: string
   error?: boolean
 }
 

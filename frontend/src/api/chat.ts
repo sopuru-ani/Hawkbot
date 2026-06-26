@@ -1,8 +1,13 @@
-import type { ApiChatMessage, StreamDonePayload } from '../types/chat'
+import type {
+  ApiChatMessage,
+  StreamDonePayload,
+  StreamStatusPayload,
+} from '../types/chat'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 
 export interface StreamCallbacks {
+  onStatus?: (payload: StreamStatusPayload) => void
   onToken: (text: string) => void
   onDone: (payload: StreamDonePayload) => void
   onError: (message: string) => void
@@ -24,7 +29,9 @@ function parseSseBlock(block: string, callbacks: StreamCallbacks) {
 
   const payload = JSON.parse(data) as Record<string, unknown>
 
-  if (event === 'token' && typeof payload.text === 'string') {
+  if (event === 'status') {
+    callbacks.onStatus?.(payload as unknown as StreamStatusPayload)
+  } else if (event === 'token' && typeof payload.text === 'string') {
     callbacks.onToken(payload.text)
   } else if (event === 'done') {
     callbacks.onDone(payload as unknown as StreamDonePayload)
