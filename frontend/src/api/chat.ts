@@ -44,13 +44,19 @@ export async function streamChat(
   messages: ApiChatMessage[],
   callbacks: StreamCallbacks,
   signal?: AbortSignal,
+  sessionId?: string,
 ): Promise<void> {
   const response = await fetch(`${API_BASE}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages }),
+    credentials: 'include',
+    body: JSON.stringify({ messages, session_id: sessionId }),
     signal,
   })
+
+  if (response.status === 401) {
+    throw new Error('Sign in required to chat')
+  }
 
   if (!response.ok) {
     throw new Error(`Chat request failed (${response.status})`)

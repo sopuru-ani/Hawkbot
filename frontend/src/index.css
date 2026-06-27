@@ -1,1 +1,188 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #800000;
+  --color-primary-hover: #6b0000;
+  --color-primary-active: #550000;
+  --color-primary-foreground: #ffffff;
+
+  --color-background: var(--theme-background);
+  --color-surface: var(--theme-surface);
+  --color-surface-elevated: var(--theme-surface-elevated);
+
+  --color-foreground: var(--theme-foreground);
+  --color-muted: var(--theme-muted);
+  --color-muted-foreground: var(--theme-muted);
+
+  --color-border: var(--theme-border);
+  --color-border-subtle: var(--theme-border-subtle);
+
+  --color-accent-subtle: var(--theme-accent-subtle);
+  --color-user-message: var(--theme-user-message);
+  --color-link: var(--theme-link);
+  --color-link-hover: var(--theme-link-hover);
+  --color-destructive: var(--theme-destructive);
+  --color-destructive-foreground: #ffffff;
+
+  --color-ring: var(--theme-ring);
+}
+
+:root {
+  --theme-background: #f8f8f6;
+  --theme-surface: #ffffff;
+  --theme-surface-elevated: #ffffff;
+  --theme-foreground: #1a1a18;
+  --theme-muted: #737370;
+  --theme-border: #e5e5e3;
+  --theme-border-subtle: #eeeeec;
+  --theme-accent-subtle: #f0ebe9;
+  --theme-user-message: #e8e8e6;
+  --theme-link: #4a5f7a;
+  --theme-link-hover: #2d3f55;
+  --theme-destructive: #b91c1c;
+  --theme-ring: #800000;
+}
+
+.dark {
+  --theme-background: #1f1f1d;
+  --theme-surface: #2a2a28;
+  --theme-surface-elevated: #333331;
+  --theme-foreground: #f5f5f3;
+  --theme-muted: #a3a3a0;
+  --theme-border: #3d3d3b;
+  --theme-border-subtle: #333331;
+  --theme-accent-subtle: #3a2e2e;
+  --theme-user-message: #2d2d2b;
+  --theme-link: #e8a8a8;
+  --theme-link-hover: #f5c8c8;
+  --theme-destructive: #ef4444;
+  --theme-ring: #a33333;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply h-svh overflow-hidden bg-background text-foreground antialiased;
+  }
+
+  #root {
+    @apply h-full;
+  }
+}
+
+@layer components {
+  .markdown {
+    @apply break-words;
+  }
+
+  .markdown > :first-child {
+    margin-top: 0;
+  }
+
+  .markdown > :last-child {
+    margin-bottom: 0;
+  }
+
+  .markdown p {
+    @apply mb-3 last:mb-0;
+  }
+
+  .markdown h1,
+  .markdown h2,
+  .markdown h3,
+  .markdown h4 {
+    @apply mb-2 mt-4 font-semibold text-foreground first:mt-0;
+  }
+
+  .markdown h1 {
+    @apply text-lg;
+  }
+
+  .markdown h2 {
+    @apply text-base;
+  }
+
+  .markdown h3,
+  .markdown h4 {
+    @apply text-sm;
+  }
+
+  .markdown ul,
+  .markdown ol {
+    @apply mb-3 space-y-1 pl-5;
+  }
+
+  .markdown ul {
+    @apply list-disc;
+  }
+
+  .markdown ol {
+    @apply list-decimal;
+  }
+
+  .markdown li > p {
+    @apply mb-1;
+  }
+
+  .markdown strong {
+    @apply font-semibold;
+  }
+
+  .markdown em {
+    @apply italic;
+  }
+
+  .markdown code {
+    @apply rounded border border-border-subtle bg-surface-elevated px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+
+  .markdown .code-block {
+    @apply relative mb-3;
+  }
+
+  .markdown .code-block pre {
+    @apply mb-0 overflow-x-auto rounded-lg border border-border bg-surface-elevated p-3 pr-10;
+  }
+
+  .markdown .code-block-copy {
+    @apply absolute right-2 top-2 flex size-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface hover:text-foreground;
+  }
+
+  .markdown pre code {
+    @apply border-0 bg-transparent p-0;
+  }
+
+  .markdown blockquote {
+    @apply mb-3 border-l-2 border-border pl-4 italic text-muted;
+  }
+
+  .markdown a {
+    @apply text-link underline-offset-2 hover:text-link-hover hover:underline;
+  }
+
+  .markdown hr {
+    @apply my-4 border-border;
+  }
+
+  .markdown table {
+    @apply mb-3 w-full border-collapse text-left text-sm;
+  }
+
+  .markdown th,
+  .markdown td {
+    @apply border border-border px-3 py-1.5;
+  }
+
+  .markdown th {
+    @apply bg-surface-elevated font-medium;
+  }
+}

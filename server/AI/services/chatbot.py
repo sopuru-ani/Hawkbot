@@ -4,6 +4,8 @@ from collections.abc import Iterator
 from AI.providers.base import LLMProvider, Message
 from AI.retrieval.retriever import Retriever, Source
 from AI.services.classifier import QueryClassifier
+from AI.services.query_rewriter import QueryRewriter
+from AI.services.section_router import SectionRouter
 from AI.services.prompts import GENERAL_SYSTEM, RAG_SYSTEM
 
 
@@ -13,10 +15,14 @@ class ChatbotService:
         llm: LLMProvider,
         retriever: Retriever,
         classifier: QueryClassifier,
+        query_rewriter: QueryRewriter,
+        section_router: SectionRouter,
     ) -> None:
         self._llm = llm
         self._retriever = retriever
         self._classifier = classifier
+        self._query_rewriter = query_rewriter
+        self._section_router = section_router
 
     def stream_chat(self, messages: list[Message]) -> Iterator[str]:
         if not messages or messages[-1].role != "user":
@@ -33,7 +39,9 @@ class ChatbotService:
 
             if mode == "umes":
                 yield _status("retrieving", "Searching UMES sources...")
-                retrieval = self._retriever.retrieve(messages[-1].content)
+                search_query = self._query_rewriter.rewrite(messages)
+                section = self._section_router.route(messages, search_query)
+                retrieval = self._retriever.retrieve(search_query, section=section)
                 sources = retrieval.sources
                 system = RAG_SYSTEM
                 generation_messages = [

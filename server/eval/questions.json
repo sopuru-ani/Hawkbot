@@ -1,0 +1,26 @@
+[
+  {
+    "query": "how many undergraduate programs does UMES offer",
+    "expected_section": "academic"
+  },
+  {
+    "query": "list all undergraduate programs at UMES",
+    "expected_section": "academic"
+  },
+  {
+    "query": "what housing communities does UMES have",
+    "expected_section": "reslife"
+  },
+  {
+    "query": "how do I apply to UMES",
+    "expected_section": "admissions"
+  },
+  {
+    "query": "UMES financial aid FAFSA",
+    "expected_section": "financialaid"
+  },
+  {
+    "query": "UMES tuition and fees",
+    "expected_section": "admissions"
+  }
+]

@@ -26,11 +26,13 @@ export interface ChatMessage extends ApiChatMessage {
   sources?: ChatSource[]
   mode?: 'umes' | 'general'
   streaming?: boolean
-  status?: string
+  thinking?: string[]
   error?: boolean
 }
 
 export interface StreamDonePayload {
   mode: 'umes' | 'general'
   sources: ChatSource[]
+  session_id?: string
+  title?: string
 }
