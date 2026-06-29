@@ -7,8 +7,14 @@ from fastapi.responses import StreamingResponse
 
 from AI.providers.base import Message
 from AI.services.chatbot import ChatbotService, _sse
+from AI.services.title_generator import TitleGenerator
 from chat_sessions.store import ChatSessionStore
-from dependencies import get_chat_session_store, get_chatbot_service, get_current_user
+from dependencies import (
+    get_chat_session_store,
+    get_chatbot_service,
+    get_current_user,
+    get_title_generator,
+)
 from schemas.auth import UserResponse
 from schemas.chat import ChatRequest
 
@@ -21,6 +27,7 @@ def chat(
     user: UserResponse = Depends(get_current_user),
     chatbot: ChatbotService = Depends(get_chatbot_service),
     session_store: ChatSessionStore = Depends(get_chat_session_store),
+    title_generator: TitleGenerator = Depends(get_title_generator),
 ) -> StreamingResponse:
     messages = [
         Message(role=message.role, content=message.content)
@@ -32,6 +39,7 @@ def chat(
         _stream_with_persistence(
             chatbot=chatbot,
             session_store=session_store,
+            title_generator=title_generator,
             user_id=user.id,
             session_id=request.session_id,
             messages=messages,
@@ -50,6 +58,7 @@ def _stream_with_persistence(
     *,
     chatbot: ChatbotService,
     session_store: ChatSessionStore,
+    title_generator: TitleGenerator,
     user_id: str,
     session_id: str | None,
     messages: list[Message],
@@ -104,7 +113,7 @@ def _stream_with_persistence(
 
     done_payload["session_id"] = active_session_id
     if should_title:
-        title = session_store.generate_title(user_content)
+        title = title_generator.generate(user_content)
         session_store.set_title(user_id, active_session_id, title)
         done_payload["title"] = title
 

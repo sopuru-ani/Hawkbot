@@ -49,6 +49,8 @@ class Settings:
     mongodb_users_collection: str
     mongodb_sessions_collection: str
     mongodb_chat_sessions_collection: str
+    tavily_api_key: str
+    tavily_max_results: int
 
 
 def get_settings() -> Settings:
@@ -89,4 +91,6 @@ def get_settings() -> Settings:
         mongodb_chat_sessions_collection=os.getenv(
             "MONGODB_CHAT_SESSIONS_COLLECTION", "chat_sessions"
         ),
+        tavily_api_key=os.environ["TAVILY_API_KEY"],
+        tavily_max_results=int(os.getenv("TAVILY_MAX_RESULTS", "5")),
     )

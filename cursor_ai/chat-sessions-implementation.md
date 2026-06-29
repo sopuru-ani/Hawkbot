@@ -42,7 +42,7 @@ All require auth cookie (`get_current_user`).
 
 - If `session_id` omitted, a new session is created before streaming.
 - After a successful stream, user + assistant messages are appended to the session.
-- On the **first message** in a default-titled thread, title is set from the first line of the user message (truncated to 50 chars).
+- On the **first message** in a default-titled thread, title is generated via a small LLM call from the first user message (truncated fallback if the call fails).
 - The `done` SSE event includes `session_id` and `title` (when newly generated).
 
 ## Frontend
@@ -75,4 +75,3 @@ Uses existing `MONGODB_URI` and `MONGODB_DB`.
 
 - History memory (load prior turns into `/api/chat` from DB)
 - Long-term user memory (`user_memories`)
-- LLM-based titles (optional upgrade from truncation)

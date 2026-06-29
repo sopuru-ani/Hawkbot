@@ -13,6 +13,7 @@ export interface ChatSource {
 export type ChatStage =
   | 'classifying'
   | 'retrieving'
+  | 'searching_web'
   | 'generating'
   | 'general'
 

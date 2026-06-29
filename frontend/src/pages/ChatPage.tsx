@@ -1,8 +1,9 @@
 import { ArrowRight, Square } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { streamChat } from '../api/chat'
 import * as sessionsApi from '../api/sessions'
+import { EmptyChatGreeting } from '../components/EmptyChatGreeting'
 import { SidebarTrigger } from '../components/Sidebar'
 import { MarkdownContent } from '../components/MarkdownContent'
 import { ThinkingDropdown } from '../components/ThinkingDropdown'
@@ -39,7 +40,9 @@ function storedToChatMessages(
 
 export function ChatPage() {
   const { chatId } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
+  const resetToken = (location.state as { reset?: number } | null)?.reset
   const { user, loading: authLoading } = useAuth()
   const { sessions, refresh, updateSessionTitle } = useChatSessions()
   const { theme, setTheme } = useTheme()
@@ -113,7 +116,7 @@ export function ChatPage() {
     return () => {
       cancelled = true
     }
-  }, [chatId, navigate, adjustTextareaHeight])
+  }, [chatId, resetToken, navigate, adjustTextareaHeight])
 
   useEffect(() => {
     if (!chatId) return
@@ -252,6 +255,8 @@ export function ChatPage() {
     }
   }
 
+  const showGreeting = !authLoading && !loadingSession && messages.length === 0
+
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key !== 'Enter' || event.shiftKey) return
 
@@ -274,6 +279,15 @@ export function ChatPage() {
       </header>
 
       <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+        {showGreeting && (
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center px-4 pb-36"
+            style={{ bottom: 0 }}
+          >
+            <EmptyChatGreeting user={user} />
+          </div>
+        )}
+
         <div className="min-h-0 flex-1 overflow-y-auto" style={{ paddingBottom: 16 }}>
           <div
             className={`mx-auto flex w-full min-w-0 ${CHAT_WIDTH} flex-col gap-4 px-4 py-4`}

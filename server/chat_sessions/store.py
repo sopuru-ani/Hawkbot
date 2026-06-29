@@ -104,15 +104,6 @@ class ChatSessionStore:
         return doc.get("title", DEFAULT_TITLE) in DEFAULT_TITLES
 
     @staticmethod
-    def generate_title(first_message: str, max_length: int = 50) -> str:
-        line = first_message.strip().split("\n", 1)[0].strip()
-        if not line:
-            return DEFAULT_TITLE
-        if len(line) <= max_length:
-            return line
-        return f"{line[: max_length - 3].rstrip()}..."
-
-    @staticmethod
     def _session_summary(session_id: ObjectId, doc: dict) -> dict:
         return {
             "id": str(session_id),

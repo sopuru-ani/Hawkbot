@@ -7,17 +7,23 @@ class QueryClassifier:
         self._llm = llm
 
     def classify(self, messages: list[Message]) -> str:
-        transcript = self._format_transcript(messages)
-        classification_messages = [
-            Message(
-                role="user",
-                content=(
-                    "Classify the following conversation.\n\n"
-                    f"{transcript}\n\n"
-                    "Is this about UMES? Reply with exactly one word: umes or general."
-                ),
+        latest = messages[-1].content.strip()
+        if len(messages) == 1:
+            content = (
+                "Is the following user message about UMES?\n\n"
+                f"Latest user message:\n{latest}\n\n"
+                "Reply with exactly one word: umes or general."
             )
-        ]
+        else:
+            transcript = self._format_transcript(messages)
+            content = (
+                "Classify the latest user message in this conversation.\n\n"
+                f"{transcript}\n\n"
+                "Is the latest user message about UMES? Use the conversation to "
+                "resolve references in follow-ups like 'them', 'that', or 'those'. "
+                "Reply with exactly one word: umes or general."
+            )
+        classification_messages = [Message(role="user", content=content)]
         result = self._llm.generate(
             classification_messages, system=CLASSIFIER_SYSTEM
         ).strip().lower()

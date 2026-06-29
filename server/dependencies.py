@@ -7,10 +7,15 @@ from AI.retrieval.chunk_store import ChunkStore
 from AI.retrieval.pinecone_client import PineconeClient
 from AI.retrieval.reranker import CrossEncoderReranker, NoOpReranker
 from AI.retrieval.retriever import Retriever
-from AI.services.chatbot import ChatbotService
+from AI.retrieval.web_search import TavilyWebSearch
 from AI.services.classifier import QueryClassifier
 from AI.services.query_rewriter import QueryRewriter
 from AI.services.section_router import SectionRouter
+from AI.services.title_generator import TitleGenerator
+from AI.services.umes_retrieval_gate import UmesRetrievalGate
+from AI.services.web_query_rewriter import WebQueryRewriter
+from AI.services.web_search_gate import WebSearchGate
+from AI.services.chatbot import ChatbotService
 from auth.store import AuthStore
 from chat_sessions.store import ChatSessionStore
 from config import Settings, get_settings
@@ -59,13 +64,35 @@ def get_chatbot_service() -> ChatbotService:
     classifier = QueryClassifier(llm=llm)
     query_rewriter = QueryRewriter(llm=llm)
     section_router = SectionRouter(llm=llm)
+    web_search = TavilyWebSearch(
+        api_key=settings.tavily_api_key,
+        max_results=settings.tavily_max_results,
+    )
+    web_search_gate = WebSearchGate(llm=llm)
+    web_query_rewriter = WebQueryRewriter(llm=llm)
+    umes_retrieval_gate = UmesRetrievalGate(llm=llm)
     return ChatbotService(
         llm=llm,
         retriever=retriever,
         classifier=classifier,
         query_rewriter=query_rewriter,
         section_router=section_router,
+        web_search=web_search,
+        web_search_gate=web_search_gate,
+        web_query_rewriter=web_query_rewriter,
+        umes_retrieval_gate=umes_retrieval_gate,
     )
+
+
+@lru_cache
+def get_title_generator() -> TitleGenerator:
+    settings = get_settings()
+    llm = OpenAICompatibleProvider(
+        api_key=settings.openai_api_key,
+        base_url=settings.openai_base_url,
+        model=settings.llm_model,
+    )
+    return TitleGenerator(llm=llm)
 
 
 @lru_cache

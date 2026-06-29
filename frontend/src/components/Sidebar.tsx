@@ -16,7 +16,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { formatSessionTime, useChatSessions } from '../hooks/useChatSessions'
+import { useChatSessions } from '../hooks/useChatSessions'
 import { useAuth, userInitials, userLabel } from '../hooks/useAuth'
 
 const MD_MEDIA = '(min-width: 768px)'
@@ -161,7 +161,7 @@ function SidebarPanel({
         {user && showLabels && (
           <div className="mt-3 flex min-h-0 flex-1 flex-col gap-1 overflow-hidden">
             <p className="px-2.5 text-xs font-medium text-muted">Recents</p>
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto">
               {sessionsLoading && recentSessions.length === 0 ? (
                 <p className="px-2.5 py-1 text-xs text-muted">Loading...</p>
               ) : recentSessions.length === 0 ? (
@@ -183,9 +183,6 @@ function SidebarPanel({
                       }`}
                     >
                       <p className="truncate text-sm">{session.title}</p>
-                      <p className="text-xs text-muted">
-                        {formatSessionTime(session.updated_at)}
-                      </p>
                     </Link>
                   )
                 })
